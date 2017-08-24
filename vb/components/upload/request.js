@@ -36,6 +36,7 @@ export default function upload (option) {
   }
 
   const formData = new FormData()
+  formData.append('enctype', 'multipart/form-data');
   formData.append(option.filename, option.file)
   if (option.data) {
     for(let key in option.data){
@@ -55,6 +56,11 @@ export default function upload (option) {
     option.onSuccess(getBody(xhr))
   }
   xhr.open('post', option.action, true)
+  if(option.header){
+    for(const key in option.header){
+      xhr.setRequestHeader(key, option.header[key]);
+    }
+  }
   //xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest')
   xhr.send(formData)
 }
