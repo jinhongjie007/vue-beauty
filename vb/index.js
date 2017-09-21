@@ -47,10 +47,25 @@ import transfer from './components/transfer';
 import timeline from './components/timeline';
 import carousel from './components/carousel';
 import treeSelect from './components/tree-select';
+import clickoutside from './directives/clickoutside';
 import tooltipd from './directives/tooltip';
-import locale from './locale';
+import { use, i18n } from './locale';
 
 import { version } from '../package.json';
+
+const clickoutsidep = {
+    install(Vue) {
+        Vue.directive('clickoutside', clickoutside);
+    },
+};
+
+message.install = function (Vue) {
+    Vue.$message = Vue.prototype.$message = message;
+};
+
+notification.install = function (Vue) {
+    Vue.$notification = Vue.prototype.$notification = notification;
+};
 
 const components = {
     breadcrumb,
@@ -102,6 +117,7 @@ const components = {
     tooltip,
     form,
     formItem: form.item,
+    clickoutsidep,
     tooltipd,
     modal,
     message,
@@ -120,14 +136,6 @@ const components = {
     treeSelect,
 };
 
-message.install = function (Vue) {
-    Vue.$message = Vue.prototype.$message = message;
-};
-
-notification.install = function (Vue) {
-    Vue.$notification = Vue.prototype.$notification = notification;
-};
-
 for (const item of Object.values(components)) {
     if (!item.install && item.name) {
         item.install = function (Vue, prefix = config.componentNamePrefix) {
@@ -138,8 +146,8 @@ for (const item of Object.values(components)) {
 
 const install = function (Vue, opts = {}) {
     if (install.installed) return;
-    locale.use(opts.locale);
-    locale.i18n(opts.i18n);
+    use(opts.locale);
+    i18n(opts.i18n);
 
     for (const item of Object.values(components)) {
         if (item.install) {
