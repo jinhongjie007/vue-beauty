@@ -4,7 +4,7 @@
         <div class="ant-row">
             <div class="aside-container ant-col-xs-24 ant-col-sm-24 ant-col-md-6 ant-col-lg-4">
                 <v-menu mode="inline" :data="menuData" :expand="true">
-                    <template scope="{data}">
+                    <template slot-scope="{data}">
                         <a v-if="data.href" :href="data.href" style="display:inline" :target="data.target">{{data.name}}</a>
                         <router-link v-else :to="data.link" style="display:inline" :target="data.target">{{data.name}}</router-link>
                     </template>
@@ -74,9 +74,6 @@ export default {
                     name: 'Breadcrumb 面包屑',
                     link: { name: 'breadcrumb' },
                 }, {
-                    name: 'BackTop 回到顶部',
-                    link: { name: 'backTop' },
-                }, {
                     name: 'Menu 导航菜单',
                     link: { name: 'menu' },
                 }, {
@@ -141,8 +138,11 @@ export default {
                     link: { name: 'upload' },
                 }],
             }, {
-                groupName: 'Data display',
+                groupName: 'Data Display',
                 list: [{
+                    name: 'Avatar 头像',
+                    link: { name: 'avatar' },
+                }, {
                     name: 'Badge 徽标数',
                     link: { name: 'badge' },
                 }, {
@@ -199,6 +199,10 @@ export default {
                 }],
             }, {
                 groupName: 'Other',
+                list: [{
+                    name: 'BackTop 回到顶部',
+                    link: { name: 'backTop' },
+                }],
             }],
         }, {
             name: 'Directives',

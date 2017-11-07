@@ -51,6 +51,39 @@ export default {
     data:()=> ({
         mode: 'inline',
         theme: 'dark',
+        collapsed: false,
+        collapsedMenuData: [{
+            name: '选项1',
+            icon: 'mail',
+        }, {
+            name: '选项2',
+            icon: 'appstore',
+        }, {
+            name: '选项3',
+            icon: 'lock',
+        }, {
+            name: '导航1',
+            icon: 'setting',
+            children: [{
+                name: "选项4"
+            },{
+                name: "选项5"
+            },{
+                name: "选项6"
+            },{
+                name: "选项7"
+            }]
+        }, {
+            name: '导航2',
+            icon: 'desktop',
+            children: [{
+                name: "选项8"
+            },{
+                name: "选项9"
+            },{
+                name: "选项10"
+            }]
+        }],
         horizontalMnueData: [{
             name: '导航一',
             icon: 'mail'
@@ -252,6 +285,64 @@ export default {
                 name: "选项11"
             },{
                 name: "选项12"
+            }]
+        }]
+    })
+}
+</script>
+```
+:::
+
+::: demo
+
+<summary>
+  #### 缩起内嵌菜单
+  你可以在 Layout 里查看侧边布局结合的完整示例
+</summary>
+
+```html
+<template>
+    <div style="width:240px">
+        <v-button type="primary" @click="collapsed = !collapsed" style="margin-bottom: 16px">
+            <v-icon :type="collapsed ? 'menu-unfold' : 'menu-fold'"></v-icon>
+        </v-button>
+        <v-menu mode="inline" :data="collapsedMenuData" theme="dark" :inline-collapsed="collapsed"></v-menu>
+    <div>
+</template>
+<script>
+export default {
+    data:()=> ({
+        collapsed: false,
+        collapsedMenuData: [{
+            name: '选项1',
+            icon: 'mail',
+        }, {
+            name: '选项2',
+            icon: 'appstore',
+        }, {
+            name: '选项3',
+            icon: 'lock',
+        }, {
+            name: '导航1',
+            icon: 'setting',
+            children: [{
+                name: "选项4"
+            },{
+                name: "选项5"
+            },{
+                name: "选项6"
+            },{
+                name: "选项7"
+            }]
+        }, {
+            name: '导航2',
+            icon: 'desktop',
+            children: [{
+                name: "选项8"
+            },{
+                name: "选项9"
+            },{
+                name: "选项10"
             }]
         }]
     })
@@ -477,15 +568,15 @@ export default {
 ```html
 <template>
     <v-menu style="width:240px" :data="customMenuData">
-        <template scope="{data}">
+        <template slot-scope="{data}">
             <i v-if="data.icon" :class="'anticon anticon-' + data.icon"></i>
             <router-link :to="data.href" style="display:inline">{{'item-' + data.name}}</router-link>
         </template>
-        <template scope="{data}" slot="sub">
+        <template slot-scope="{data}" slot="sub">
             <i v-if="data.icon" :class="'anticon anticon-' + data.icon"></i>
             <span>{{'sub-' + data.name}}</span>
         </template>
-        <template scope="{data}" slot="group">
+        <template slot-scope="{data}" slot="group">
             {{'group-' + data.groupName}}
         </template>
     </v-menu>
@@ -547,6 +638,7 @@ export default {
 | data | 可嵌套的节点属性的数组，生成menu的数据 | Array | - |
 | theme | 主题颜色 | String: `light` `dark` | light |
 | expand | 设为true会展开所有第一级的菜单 | Boolean | false |
+| inlineCollapsed | inline 时菜单是否收起状态 | Boolean | false |
 | default:scopedSlot | 自定义MenuItem Name的内容，传入的参数:data | Slot Node | - |
 | sub:scopedSlot | 自定义SubMenu Name的内容，传入的参数:data | Slot Node | - |
 | group:scopedSlot | 自定义Group Name的内容，传入的参数:data | Slot Node | - |

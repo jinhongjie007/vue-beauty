@@ -7,15 +7,15 @@
               {{item.groupName}}
             </slot>
         </div>
-        <Menu :data="item.list" type="item-group-list" :mode="mode" :level="level" :id="index">
+        <Menu :data="item.list" type="item-group-list" :mode="innerMode" :level="level" :id="index">
           <!-- slot不支持v-if 所以用:slot="$scopedSlots.default?'default':'hack'"来让没有使用slot的时候不会影响正常的渲染 -->
-            <template scope="{data}" :slot="$scopedSlots.default?'default':'hack'">
+            <template slot-scope="{data}" :slot="$scopedSlots.default?'default':'hack'">
               <slot :data="data"></slot>
             </template>
-            <template scope="{data}" :slot="$scopedSlots.sub?'sub':'hack'">
+            <template slot-scope="{data}" :slot="$scopedSlots.sub?'sub':'hack'">
               <slot :data="data" name="sub"></slot>
             </template>
-            <template scope="{data}" :slot="$scopedSlots.group?'group':'hack'">
+            <template slot-scope="{data}" :slot="$scopedSlots.group?'group':'hack'">
               <slot :data="data" name="group"></slot>
             </template>
         </Menu>
@@ -27,10 +27,10 @@
           <slot :data="item">
             <i v-if="item.icon" :class="'anticon anticon-' + item.icon"></i>
             <a v-if="item.href" :href="item.href" style="display:inline" :target="item.target">{{item.name}}</a>
-            <template v-else>{{item.name}}</template>
+            <span v-else>{{item.name}}</span>
           </slot>
         </li>
-        <li v-else :class="[prefix+'-submenu',prefix+'-submenu-'+mode,{[prefix+'-submenu-open']: item.expand}]" @mouseover="mouseTriggerOpen(item.disabled,index,true)" @mouseout="mouseTriggerOpen(item.disabled,index,false)">
+        <li v-else :class="[prefix+'-submenu',prefix+'-submenu-'+innerMode,{[prefix+'-submenu-open']: item.expand}]" @mouseover="mouseTriggerOpen(item.disabled,index,true)" @mouseout="mouseTriggerOpen(item.disabled,index,false)">
           <div :class="[prefix+'-submenu-title',{[prefix+'-submenu-disabled']: item.disabled}]" :style="paddingSty" :title="item.name" @click="clickTriggerOpen(item.disabled,index)">
             <span>
               <slot :data="item" name="sub">
@@ -39,30 +39,30 @@
               </slot>
             </span>
           </div>
-          <Menu v-if="item.children" :data="item.children" type="sub" :mode="mode" :level="level+1" :transition="mode=='inline'?'slide-up':'fade'" v-show="item.expand" :id="index">
-            <!-- slot不支持v-if 所以用:slot="$scopedSlots.default?'default':'hack'"来让没有使用slot的时候不会影响正常的渲染 -->
-            <template scope="{data}" :slot="$scopedSlots.default?'default':'hack'">
-              <slot :data="data"></slot>
-            </template>
-            <template scope="{data}" :slot="$scopedSlots.sub?'sub':'hack'">
-              <slot :data="data" name="sub"></slot>
-            </template>
-            <template scope="{data}" :slot="$scopedSlots.group?'group':'hack'">
-              <slot :data="data" name="group"></slot>
-            </template>
-          </Menu>
-          <Menu v-else :is-item-group="true" :data="item.groups" type="sub" :mode="mode" :level="level+1" :transition="mode=='inline'?'slide-up':'fade'" v-show="item.expand" :id="index">
-            <!-- slot不支持v-if 所以用:slot="$scopedSlots.default?'default':'hack'"来让没有使用slot的时候不会影响正常的渲染 -->
-            <template scope="{data}" :slot="$scopedSlots.default?'default':'hack'">
-              <slot :data="data"></slot>
-            </template>
-            <template scope="{data}" :slot="$scopedSlots.sub?'sub':'hack'">
-              <slot :data="data" name="sub"></slot>
-            </template>
-            <template scope="{data}" :slot="$scopedSlots.group?'group':'hack'">
-              <slot :data="data" name="group"></slot>
-            </template>
-          </Menu>
+            <Menu v-if="item.children" :data="item.children" type="sub" :mode="innerMode" :level="level+1" :transition="innerMode=='inline'?'slide-up':'fade'" v-show="item.expand" :id="index">
+                <!-- slot不支持v-if 所以用:slot="$scopedSlots.default?'default':'hack'"来让没有使用slot的时候不会影响正常的渲染 -->
+                <template slot-scope="{data}" :slot="$scopedSlots.default?'default':'hack'">
+                <slot :data="data"></slot>
+                </template>
+                <template slot-scope="{data}" :slot="$scopedSlots.sub?'sub':'hack'">
+                <slot :data="data" name="sub"></slot>
+                </template>
+                <template slot-scope="{data}" :slot="$scopedSlots.group?'group':'hack'">
+                <slot :data="data" name="group"></slot>
+                </template>
+            </Menu>
+            <Menu v-else :is-item-group="true" :data="item.groups" type="sub" :mode="innerMode" :level="level+1" :transition="innerMode=='inline'?'slide-up':'fade'" v-show="item.expand" :id="index">
+                <!-- slot不支持v-if 所以用:slot="$scopedSlots.default?'default':'hack'"来让没有使用slot的时候不会影响正常的渲染 -->
+                <template slot-scope="{data}" :slot="$scopedSlots.default?'default':'hack'">
+                <slot :data="data"></slot>
+                </template>
+                <template slot-scope="{data}" :slot="$scopedSlots.sub?'sub':'hack'">
+                <slot :data="data" name="sub"></slot>
+                </template>
+                <template slot-scope="{data}" :slot="$scopedSlots.group?'group':'hack'">
+                <slot :data="data" name="group"></slot>
+                </template>
+            </Menu>
         </li>
       </template>
     </template>
@@ -121,6 +121,10 @@ export default {
             type: Number,
             default: 1,
         },
+        inlineCollapsed: {
+            type: Boolean,
+            default: false,
+        },
     },
     created() {
         if (this.expand) {
@@ -156,9 +160,12 @@ export default {
                 return [
                     this.prefix,
                     `${this.prefix}-${this.type}`,
-                    `${this.prefix}-${this.mode}`,
+                    `${this.prefix}-${this.innerMode}`,
                     {
                         [`${this.prefix}-${this.theme}`]: this.type === 'root',
+                    },
+                    {
+                        [`${this.prefix}-inline-collapsed`]: this.type === 'root' && this.inlineCollapsed,
                     },
                 ];
             } else if (this.type === 'item-group-list') {
@@ -166,13 +173,17 @@ export default {
             }
         },
         paddingSty() {
-            return this.mode === 'inline' ? {
+            return this.innerMode === 'inline' ? {
                 paddingLeft: `${24 * this.level}px`,
             } : {};
         },
+        innerMode() {
+            if (this.inlineCollapsed && this.mode === 'inline') return 'vertical';
+            return this.mode;
+        },
     },
     watch: {
-        mode() {
+        innerMode() {
             for (const item of this.data) {
                 this.$set(item, 'expand', false);
             }
@@ -185,12 +196,12 @@ export default {
             }
         },
         clickTriggerOpen(disabled, index) {
-            if (!disabled && this.mode === 'inline') {
+            if (!disabled && this.innerMode === 'inline') {
                 this.setOpen(index, !this.data[index].expand);
             }
         },
         mouseTriggerOpen(disabled, index, status) {
-            if (!disabled && this.mode !== 'inline') {
+            if (!disabled && this.innerMode !== 'inline') {
                 if (this.timer[index]) clearTimeout(this.timer[index]);
                 this.timer[index] = setTimeout(() => this.setOpen(index, status), 300);
             }
